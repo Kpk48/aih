@@ -8,12 +8,22 @@ def google_oauth_login():
             st.success(f"Already logged in as {st.session_state['user_email']}")
             return st.session_state["user_email"]
     
-    oauth = OAuth2Component(
-        client_id     = st.secrets["oauth_client_id"],
-        client_secret = st.secrets["oauth_client_secret"],
-        authorize_endpoint = "https://accounts.google.com/o/oauth2/v2/auth",
-        token_endpoint     = "https://oauth2.googleapis.com/token",
-    )
+import streamlit as st
+from streamlit_oauth import OAuth2Component
+
+# Load secrets from Streamlit Cloud
+client_id = st.secrets["oauth"]["client_id"]
+client_secret = st.secrets["oauth"]["client_secret"]
+
+oauth2 = OAuth2Component(
+    client_id=client_id,
+    client_secret=client_secret,
+    auth_url="https://accounts.google.com/o/oauth2/v2/auth",
+    token_url="https://oauth2.googleapis.com/token",
+    redirect_uri="https://YOUR-STREAMLIT-APP.streamlit.app",
+    scopes=["email", "profile"]
+)
+
 
     try:
         result = oauth.authorize_button(
