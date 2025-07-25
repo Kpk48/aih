@@ -2,7 +2,8 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import pickle
-import tensorflow as tf
+import torch
+import torch.nn as nn
 import matplotlib.pyplot as plt
 from fpdf import FPDF
 from auth_oauth import google_oauth_login
@@ -34,7 +35,7 @@ def load_models():
         model_files = {
             "dt": "models/dt_model.pkl",
             "xgb": "models/xgb_model.pkl", 
-            "nn": "models/nn_model.h5"
+            "nn": "models/nn_model.pth"  # Changed from .h5 to .pth for PyTorch
         }
         
         for name, path in model_files.items():
@@ -45,7 +46,11 @@ def load_models():
         
         dt = pickle.load(open("models/dt_model.pkl", "rb"))
         xgb = pickle.load(open("models/xgb_model.pkl", "rb"))
-        nn = tf.keras.models.load_model("models/nn_model.h5")
+        
+        # Load PyTorch model
+        nn = torch.load("models/nn_model.pth", map_location='cpu')
+        nn.eval()  # Set to evaluation mode
+        
         return dt, xgb, nn
     except Exception as e:
         st.error(f"Error loading models: {str(e)}")
@@ -103,10 +108,16 @@ try:
     with st.spinner("Running XGBoost..."):
         predictions["XGBoost"] = xgb_model.predict(X)
     
-    # Neural Network predictions
+    # Neural Network predictions (PyTorch)
     with st.spinner("Running Neural Network..."):
-        nn_pred = nn_model.predict(X)
-        predictions["Neural Network"] = np.argmax(nn_pred, axis=1)
+        # Convert to PyTorch tensor
+        X_tensor = torch.FloatTensor(X.values)
+        
+        # Make predictions
+        with torch.no_grad():
+            nn_pred = nn_model(X_tensor)
+            # Convert probabilities to class predictions
+            predictions["Neural Network"] = torch.argmax(nn_pred, dim=1).numpy()
     
 except Exception as e:
     st.error(f"Error during prediction: {str(e)}")
