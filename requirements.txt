@@ -1,0 +1,10 @@
+streamlit
+tensorflow
+scikit-learn
+pandas
+matplotlib
+seaborn
+google-auth
+google-auth-oauthlib
+google-auth-httplib2
+streamlit-extras
