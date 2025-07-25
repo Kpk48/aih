@@ -1,11 +1,8 @@
-streamlit
-tensorflow==2.13.0
+streamlit>=1.35.0
+tensorflow-cpu==2.13.0
 scikit-learn
 pandas
 matplotlib
 seaborn
-google-auth
-google-auth-oauthlib
-google-auth-httplib2
-streamlit-extras
 h5py
+streamlit-extras
