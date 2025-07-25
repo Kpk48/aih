@@ -1,5 +1,5 @@
 streamlit
-tensorflow
+tensorflow==2.13.0
 scikit-learn
 pandas
 matplotlib
@@ -8,3 +8,4 @@ google-auth
 google-auth-oauthlib
 google-auth-httplib2
 streamlit-extras
+h5py
